@@ -76,27 +76,7 @@ python scripts\nvx.py run
 - [宿主准备脚本](https://nvx.ndjp.net/docs/host-setup/) — `scripts/setup` 下宿主环境准备脚本的用法。
 - [安全策略](https://nvx.ndjp.net/docs/security/) — 漏洞报告方式与安全响应流程。
 
-## 关于本仓库
-
-本仓库是 NVX 中文文档站的源码，内容与许可归属见 [`public/NOTICE.txt`](public/NOTICE.txt)。
-
-- **在线站点**：<https://nvx.ndjp.net/>
-- **翻译范围**：`src/content/docs/` 下逐篇译自 [`microsoft/nvx`](https://github.com/microsoft/nvx) `dev` 分支的 16 篇主文档、31 篇架构章节，以及宿主准备脚本与安全策略，共 49 篇
-- **技术栈**：Astro 7 + Tailwind CSS 4，纯静态输出，无服务端依赖
-
-本地开发：
-
-```bash
-bun install
-bun run dev        # http://localhost:4321
-bun run check      # Astro + TypeScript 检查
-bun run build      # 输出到 dist/
-```
-
-部署使用 GitHub Pages（见 `.github/workflows/deploy.yml`），推送 `main` 即自动发布；自定义域为 `nvx.ndjp.net`。
-
 ## 许可与归属
 
 - NVX 本身由 Microsoft Corporation 以 MIT License 发布，版权归其所有。
-- 本文档站为非官方中文翻译，内容以 [`microsoft/nvx`](https://github.com/microsoft/nvx) 仓库原文为准。
-- 站点字体 Syne 与 Familjen Grotesk 通过 Fontsource 自托管，遵循 SIL Open Font License 1.1；中文使用访问者系统自带的 CJK 字体。
+- 本文档为非官方中文翻译，内容以 [`microsoft/nvx`](https://github.com/microsoft/nvx) 仓库原文为准；许可与字体归属见 [`public/NOTICE.txt`](public/NOTICE.txt)。
