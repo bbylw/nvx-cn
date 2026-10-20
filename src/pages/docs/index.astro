@@ -1,0 +1,149 @@
+---
+// 文档首页：一篇可读的中文概览 + 快速启动，而不是链接卡片墙。
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { withBase } from '../../lib/site';
+
+const headings = [
+  { depth: 2, text: 'NVX 是什么', slug: 'what' },
+  { depth: 2, text: '五分钟启动', slug: 'quickstart' },
+  { depth: 2, text: '文档怎么读', slug: 'read' },
+  { depth: 2, text: '上游与译文', slug: 'upstream' },
+];
+---
+
+<DocsLayout
+  title="NVX 中文文档"
+  description="NVX 微虚拟机沙箱的完整中文文档：安装、构建、运行、命令行、Rust API、架构与客户机支持。"
+  headings={headings}
+  isHome={true}
+>
+  <section id="what">
+    <h2>NVX 是什么</h2>
+    <p>
+      NVX 是一个超轻量级微虚拟机沙箱，用硬件强制隔离来运行不受信任的工作负载。它构建在
+      OpenVMM 之上，客户机运行 Linux；同一套 NVX 内核可以启动 Alpine、Ubuntu 或 Azure
+      Linux 用户态。
+    </p>
+    <p>
+      NVX 不是通用虚拟机管理器。它把“一台微虚拟机”收敛成“一个隔离的工作负载”：启动路径短、
+      状态面小、默认网络封闭，客户机里的工作负载通过一条经过认证的控制台与宿主通信。宿主侧
+      既可以用 <code>python3 scripts/nvx.py</code> 驱动，也可以直接使用 Rust crate
+      <code>aci_edge_sandboxes</code>。
+    </p>
+  </section>
+
+  <div class="not-prose mt-6 grid gap-2 sm:grid-cols-2">
+    <div class="bg-mid p-4">
+      <p class="text-small text-muted">隔离边界</p>
+      <p class="mt-2 text-body">KVM、MSHV 或 WHP 提供的硬件虚拟化，而不是容器命名空间。</p>
+    </div>
+    <div class="bg-mid p-4">
+      <p class="text-small text-muted">启动目标</p>
+      <p class="mt-2 text-body">直接内核启动，客户机就绪后立即进入受监管的工作负载。</p>
+    </div>
+    <div class="bg-mid p-4">
+      <p class="text-small text-muted">默认策略</p>
+      <p class="mt-2 text-body">出站流量默认拒绝，按需加入规则；宿主回环访问显式开启。</p>
+    </div>
+    <div class="bg-mid p-4">
+      <p class="text-small text-muted">交付形态</p>
+      <p class="mt-2 text-body">预构建发布包、源码构建，以及不依赖 Python 运行时的 Rust API。</p>
+    </div>
+  </div>
+
+  <section id="quickstart">
+    <h2>五分钟启动</h2>
+    <p>
+      需要 Python 3.10 或更新版本。下面的命令会从当前检出版本对应的发布版下载预构建 NVX
+      包；如果该版本没有可用发布包，则从最近的已发布祖先版本获取。成功启动后会打印
+      <code>NVX-GUEST-BOOT-OK: alpine</code>，并打开一个 root shell。
+    </p>
+
+    <pre><code><span class="docs-prompt">$</span> git clone https://github.com/microsoft/nvx.git &amp;&amp; cd nvx
+<span class="docs-prompt">$</span> python3 scripts/nvx.py download
+<span class="docs-prompt">$</span> python3 scripts/nvx.py run
+<span class="docs-ok">NVX-GUEST-BOOT-OK: alpine</span>
+root@nvx:~# <span class="docs-cursor">_</span></code></pre>
+
+    <p>启动其他用户态，或换用其他 hypervisor：</p>
+    <pre><code><span class="docs-prompt">$</span> python3 scripts/nvx.py run --guest ubuntu
+<span class="docs-prompt">$</span> python3 scripts/nvx.py run --guest azurelinux
+<span class="docs-prompt">$</span> python3 scripts/nvx.py download --hypervisor mshv
+<span class="docs-prompt">$</span> python3 scripts/nvx.py run --hypervisor mshv</code></pre>
+
+    <p>
+      客户机内用 <code>/sbin/nvx-exit 0</code> 正常退出。更细的环境要求见
+      <a href={withBase('/docs/setup/')}>环境准备</a>，运行选项见 <a href={withBase('/docs/run/')}>运行</a>，
+      完整命令面见 <a href={withBase('/docs/usage/')}>命令行参考</a>。
+    </p>
+  </section>
+
+  <section id="read">
+    <h2>文档怎么读</h2>
+    <p>
+      左侧目录按“使用、开发、客户机”分组。第一次接触 NVX，按下面的顺序读最省时间；已经熟悉
+      项目的话，可以直接跳到命令行参考或 Rust API。其中
+      <a href={withBase('/docs/design/')}>架构设计</a>是一套完整的中文架构手册，31 篇章节按信任边界、虚拟机架构、虚拟设备、客户机运行时与生命周期五条主线展开。
+    </p>
+
+    <div class="not-prose mt-6 grid gap-2 md:grid-cols-3">
+      <a class="press group bg-mid p-5 hover:bg-accent hover:text-accent-ink" href={withBase('/docs/setup/')}>
+        <p class="text-small text-muted group-hover:text-accent-ink">使用 · 01</p>
+        <p class="mt-2 text-lead">环境准备</p>
+        <p class="mt-2 text-small text-muted group-hover:text-accent-ink">
+          配置 KVM、MSHV 或 WHP，确认 Python 与依赖版本。
+        </p>
+      </a>
+      <a class="press group bg-mid p-5 hover:bg-accent hover:text-accent-ink" href={withBase('/docs/run/')}>
+        <p class="text-small text-muted group-hover:text-accent-ink">使用 · 03</p>
+        <p class="mt-2 text-lead">运行</p>
+        <p class="mt-2 text-small text-muted group-hover:text-accent-ink">
+          启动、退出、挂载、网络策略，以及直接运行 OpenVMM。
+        </p>
+      </a>
+      <a class="press group bg-mid p-5 hover:bg-accent hover:text-accent-ink" href={withBase('/docs/usage/')}>
+        <p class="text-small text-muted group-hover:text-accent-ink">使用 · 05</p>
+        <p class="mt-2 text-lead">命令行参考</p>
+        <p class="mt-2 text-small text-muted group-hover:text-accent-ink">
+          逐项查阅 nvx.py 与 nvx-rs 的命令、选项和默认值。
+        </p>
+      </a>
+      <a class="press group bg-mid p-5 hover:bg-accent hover:text-accent-ink" href={withBase('/docs/design/')}>
+        <p class="text-small text-muted group-hover:text-accent-ink">开发 · 01</p>
+        <p class="mt-2 text-lead">架构设计</p>
+        <p class="mt-2 text-small text-muted group-hover:text-accent-ink">
+          从信任边界、虚拟设备到启动与快照协议的完整设计。
+        </p>
+      </a>
+      <a class="press group bg-mid p-5 hover:bg-accent hover:text-accent-ink" href={withBase('/docs/rust-api/')}>
+        <p class="text-small text-muted group-hover:text-accent-ink">使用 · 06</p>
+        <p class="mt-2 text-lead">Rust API</p>
+        <p class="mt-2 text-small text-muted group-hover:text-accent-ink">
+          用 aci_edge_sandboxes 在 Rust 中驱动沙箱生命周期。
+        </p>
+      </a>
+      <a class="press group bg-mid p-5 hover:bg-accent hover:text-accent-ink" href={withBase('/docs/contribute/')}>
+        <p class="text-small text-muted group-hover:text-accent-ink">开发 · 06</p>
+        <p class="mt-2 text-lead">贡献指南</p>
+        <p class="mt-2 text-small text-muted group-hover:text-accent-ink">
+          提交信息、PR 流程、CI 门禁和 OpenVMM 上游协作。
+        </p>
+      </a>
+    </div>
+  </section>
+
+  <section id="upstream">
+    <h2>上游与译文</h2>
+    <p>
+      本中文站是非官方翻译，覆盖 <code>microsoft/nvx</code> 仓库 <code>dev</code> 分支的 16
+      份主文档、<code>doc/design</code> 下的 31 篇架构章节，以及宿主准备脚本与安全策略，共 49
+      篇。代码、命令、选项和 API 名称保持英文原样；遇到与上游不一致的地方，以
+      <a href="https://github.com/microsoft/nvx/tree/dev/doc">上游文档</a> 为准。
+    </p>
+    <p>
+      译文会随上游更新而调整。发现术语、链接或命令问题，可以在
+      <a href="https://github.com/microsoft/nvx/issues">microsoft/nvx</a> 反馈上游问题，或在本站仓库提交翻译修正。
+    </p>
+  </section>
+</DocsLayout>
+

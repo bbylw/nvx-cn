@@ -1,0 +1,61 @@
+---
+// 顶行拼板：标志砖 / 链接砖 / 行动砖（落地页与文档页共用）
+import { withBase } from '../lib/site';
+
+interface Props {
+  current?: 'home' | 'docs' | 'none';
+}
+const { current = 'home' } = Astro.props;
+const isHome = current === 'home';
+---
+
+<header class="grid gap-2" style="grid-template-columns: 60px minmax(0, 1fr) auto;">
+  <div class="tile on-paper flex h-[60px] items-center justify-center bg-paper">
+    <a
+      href={withBase('/')}
+      class="font-display text-body press"
+      style="color: var(--accent-ink)"
+      aria-current={current === 'home' ? 'page' : undefined}
+    >
+      NVX
+    </a>
+  </div>
+  <div class="tile flex h-[60px] min-w-0 items-center bg-surface px-2 md:px-6">
+    <nav
+      class="flex w-full items-center gap-2 whitespace-nowrap text-small md:gap-8 md:pl-[12%] md:text-body"
+      aria-label="站点导航"
+    >
+      {isHome ? (
+        <>
+          <a class="press inline-flex min-h-[44px] items-center hover:text-accent" href="#how">启动</a>
+          <a class="press inline-flex min-h-[44px] items-center hover:text-accent" href="#feat">构件</a>
+          <a class="press inline-flex min-h-[44px] items-center hover:text-accent" href="#proof">谱系</a>
+          <a class="press inline-flex min-h-[44px] items-center hover:text-accent" href={withBase('/docs/')}>文档</a>
+        </>
+      ) : (
+        <>
+          <a class="press inline-flex min-h-[44px] items-center hover:text-accent" href={withBase('/#how')}>启动</a>
+          <a class="press inline-flex min-h-[44px] items-center hover:text-accent" href={withBase('/#feat')}>构件</a>
+          <a class="press inline-flex min-h-[44px] items-center hover:text-accent" href={withBase('/#proof')}>谱系</a>
+          <a
+            class={`press inline-flex min-h-[44px] items-center ${current === 'docs' ? 'text-accent' : 'hover:text-accent'}`}
+            href={withBase('/docs/')}
+            aria-current={current === 'docs' ? 'page' : undefined}
+          >
+            文档
+          </a>
+        </>
+      )}
+    </nav>
+  </div>
+  <div class="tile flex h-[60px] items-center justify-center bg-mid px-1.5 md:px-3">
+    <a
+      class="press inline-flex min-h-[44px] items-center whitespace-nowrap bg-accent px-2.5 text-small text-accent-ink hover:bg-accent-ink hover:text-accent md:px-5 md:text-body"
+      href="https://github.com/microsoft/nvx"
+      aria-label="下载并启动 NVX"
+    >
+      <span class="md:hidden">获取</span>
+      <span class="hidden md:inline">下载并启动</span>
+    </a>
+  </div>
+</header>

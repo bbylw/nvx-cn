@@ -1,0 +1,25 @@
+# 依赖与构建产物
+node_modules/
+dist/
+.astro/
+
+# 本地工具与工作区（不随站点发布）
+.frontend-studio/
+.workbuddy/
+.wbapp_*
+
+# 本地环境与预览
+.env
+.env.*
+!.env.example
+.portless/
+.playwright-mcp/
+test-results/
+playwright-report/
+
+# 编辑器与系统文件
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

@@ -1,0 +1,353 @@
+---
+// NVX 中文站 · 落地页（dense-tiles「The well-kept board」）
+import Base from '../layouts/Base.astro';
+import TopRow from '../components/TopRow.astro';
+import BootConsole from '../components/BootConsole.astro';
+import { withBase } from '../lib/site';
+
+const binaries = [
+  'nvx-console-pending',
+  'nvx-mmio-write',
+  'nvx-reseed',
+  'nvx-exit',
+  'nvx-device-io',
+  'nvx-managed-agent',
+  'nvx-ingress',
+  'nvx-time',
+  'nvx-time-probe',
+];
+
+const marks = [
+  { name: 'MSR 系统研究组', role: '微软研究院' },
+  { name: 'Azure 系统研究院', role: 'Azure 研究院' },
+  { name: 'Nanvix', role: '研究基础' },
+  { name: 'OpenVMM', role: '虚拟化平台' },
+  { name: 'Linux', role: '客户机内核' },
+  { name: 'Rust', role: '客户机工具链' },
+];
+
+const layers = [
+  { index: '01', name: '客户机用户态', detail: 'Alpine / Ubuntu / Azure Linux', tone: 'bg-paper on-paper text-accent-ink' },
+  { index: '02', name: 'NVX 内核', detail: '单工作负载运行时', tone: 'bg-accent text-accent-ink' },
+  { index: '03', name: 'OpenVMM 控制协议', detail: '策略下沉与监管', tone: 'bg-mid text-ink' },
+  { index: '04', name: '宿主 hypervisor', detail: 'KVM / MSHV / WHP', tone: 'bg-bg text-ink hairline' },
+];
+
+const steps = [
+  {
+    index: '01',
+    time: '几秒钟',
+    command: 'git clone https://github.com/microsoft/nvx',
+    note: '克隆仓库，拿到内核、OpenVMM 与 Rust 工具链的全部锁定版本。',
+    tone: 'bg-mid text-ink',
+  },
+  {
+    index: '02',
+    time: '几分钟',
+    command: 'python3 scripts/nvx.py download',
+    note: '下载预构建包，不必自建客户机内核与 initramfs。',
+    tone: 'bg-accent text-accent-ink',
+  },
+  {
+    index: '03',
+    time: '几秒钟',
+    command: 'python3 scripts/nvx.py run',
+    note: '运行，拿到 root 命令行；用 /sbin/nvx-exit 0 正常退出。',
+    tone: 'bg-paper on-paper text-accent-ink',
+  },
+];
+---
+
+<Base
+  title="NVX · 超轻量级微虚拟机沙箱（中文站）"
+  description="NVX 是构建于 OpenVMM 之上的超轻量级微虚拟机沙箱，以硬件强制隔离运行不受信任的工作负载。三条命令启动，一个内核，三个用户态。"
+>
+  <div class="p-2">
+    <TopRow current="home" />
+
+    <main id="main">
+      <!-- HERO：两乘两拼板。左上是产品字标，右上是真实控制台，
+           左下是微虚拟机栈，右下是两句立场。 -->
+      <div class="mt-2 grid gap-2 lg:auto-rows-fr lg:min-h-[calc(100svh-84px)] lg:grid-cols-2">
+        <div class="tile on-paper reveal relative min-h-[32svh] bg-paper" data-delay="0">
+          <p class="absolute left-6 top-6 flex items-center gap-3 font-display text-small text-accent-ink/70">
+            <span class="inline-block h-3 w-3 bg-accent"></span>
+            超轻量级微虚拟机沙箱
+          </p>
+          <h1 class="text-name absolute bottom-6 left-6 font-display" style="color: var(--accent-ink)">NVX</h1>
+        </div>
+
+        <div class="tile shutter bg-mid">
+          <BootConsole />
+        </div>
+
+        <div class="tile reveal order-4 min-h-[38svh] bg-surface p-6 lg:order-none" data-delay="120">
+          <div class="flex h-full flex-col justify-between gap-6">
+            <div>
+              <p class="eyebrow text-muted">微虚拟机栈</p>
+              <p class="mt-3 text-lead">硬件强制隔离的四层</p>
+            </div>
+            <ul class="mt-8 space-y-2">
+              {
+                layers.map((layer) => (
+                  <li class={`tile flex items-center gap-4 px-4 py-3 ${layer.tone}`}>
+                    <span class="font-mono text-small opacity-60 tabular-nums">{layer.index}</span>
+                    <span class="min-w-0 flex-1 text-body">{layer.name}</span>
+                    <span class="text-small opacity-70">{layer.detail}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+
+        <div class="order-3 grid grid-cols-2 gap-2 lg:order-none">
+          <div class="tile reveal flex flex-col justify-center bg-surface p-6" data-delay="80">
+            <p class="text-lead text-balance">在硬件强制隔离下运行不受信任的工作负载。</p>
+          </div>
+          <div class="tile reveal flex flex-col justify-center bg-accent p-6" data-delay="160">
+            <p class="text-lead text-accent-ink">
+              三条命令，<br />
+              一个 root 命令行。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 规格条：把散落在各处的硬事实收成一行 -->
+      <div class="tile reveal mt-2 flex flex-wrap items-center gap-x-5 gap-y-2 bg-surface px-5 py-3 text-small" data-delay="40">
+        <span class="text-ink">Python 3.10+</span>
+        <span class="text-accent">/</span>
+        <span class="text-muted">KVM · MSHV · WHP</span>
+        <span class="text-accent">/</span>
+        <span class="text-muted">Alpine · Ubuntu · Azure Linux</span>
+        <span class="text-accent">/</span>
+        <span class="text-muted">MIT 许可 · 硬件强制隔离</span>
+      </div>
+
+      <!-- how：三条命令 -->
+      <section id="how" class="mt-2">
+        <div class="tile bg-surface p-6 md:p-8">
+          <header class="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p class="eyebrow text-muted">01 · 启动</p>
+              <h2 class="section-title mt-3">三条命令启动</h2>
+            </div>
+            <p class="max-w-[40ch] text-body text-muted">
+              克隆、下载、运行。成功后打印 NVX-GUEST-BOOT-OK，并打开一个 root 命令行。
+            </p>
+          </header>
+
+          <div class="mt-10 grid gap-2 lg:grid-cols-3">
+            {
+              steps.map((step) => (
+                <div class={`tile flex flex-col justify-between gap-8 p-5 md:p-6 ${step.tone}`}>
+                  <div class="flex items-baseline justify-between gap-3">
+                    <span class="font-mono text-small tabular-nums opacity-60">{step.index}</span>
+                    <span class="font-display text-lead">{step.time}</span>
+                  </div>
+                  <div>
+                    <code class="step-command">{step.command}</code>
+                    <p class="mt-4 text-body opacity-80">{step.note}</p>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- feat：系统构件 -->
+      <section id="feat" class="mt-2">
+        <div class="tile bg-surface p-6 md:p-8">
+          <header class="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p class="eyebrow text-muted">02 · 构件</p>
+              <h2 class="section-title mt-3">系统构件</h2>
+            </div>
+            <p class="max-w-[40ch] text-body text-muted">
+              九个 /sbin/nvx-* 契约、nvx-rs 机制、三个 hypervisor 与三个用户态，共用同一套微虚拟机栈。
+            </p>
+          </header>
+
+          <div class="mt-10 grid gap-2 lg:grid-cols-12" style="grid-auto-rows: minmax(96px, auto);">
+            <div class="tile reveal flex flex-col justify-between bg-mid p-5 lg:col-span-5 lg:row-span-4" data-delay="0">
+              <div class="flex items-baseline justify-between gap-3">
+                <span class="font-display stat">9×</span>
+                <span class="text-small text-muted">静态契约</span>
+              </div>
+              <ul class="my-6 space-y-1 font-mono text-small text-muted">
+                {binaries.map((name) => <li>/sbin/{name}</li>)}
+              </ul>
+              <p class="text-small text-muted">/sbin/nvx-* · musl 静态链接</p>
+            </div>
+
+            <div class="tile reveal flex flex-col justify-between bg-surface p-5 lg:col-span-3" data-delay="60" data-ui>
+              <span class="font-display stat">EXIT 0</span>
+              <p class="mt-6 text-small text-muted">nvx-exit · 八位退出码停止 VM</p>
+            </div>
+
+            <div class="tile reveal flex flex-col justify-between bg-accent p-5 lg:col-span-4" data-delay="120">
+              <span class="font-display stat text-accent-ink">0x604</span>
+              <p class="mt-6 text-small text-accent-ink/80">OpenVMM 控制端口</p>
+            </div>
+
+            <div class="tile reveal flex flex-col justify-between bg-surface p-5 lg:col-span-3" data-delay="60">
+              <span class="font-display stat">KVM</span>
+              <p class="mt-6 text-small text-muted">另有 MSHV 与 WHP</p>
+            </div>
+
+            <div class="tile reveal flex flex-col justify-between bg-surface p-5 lg:col-span-4" data-delay="120">
+              <span class="font-display stat">v1</span>
+              <p class="mt-6 text-small text-muted">NVX 时间 ABI</p>
+            </div>
+
+            <div class="tile reveal flex flex-col justify-between bg-surface p-5 lg:col-span-3 lg:row-span-2" data-delay="60">
+              <span class="font-display stat">256</span>
+              <div class="mt-4">
+                <p class="text-small text-muted">策略下沉与监管</p>
+                <p class="mt-3 text-small text-muted">
+                  nvx-rs 将 egress 策略编译为 OpenVMM 原生规则，每动作最多 256 条；Instance 监督实例全生命周期。
+                </p>
+              </div>
+            </div>
+
+            <div class="tile reveal flex flex-col justify-between bg-mid p-5 lg:col-span-4 lg:row-span-2" data-delay="120" data-ui>
+              <div class="flex items-baseline justify-between gap-3">
+                <span class="font-display text-lead">受管生命周期</span>
+                <span class="text-small text-muted">六个操作</span>
+              </div>
+              <pre class="ui-log mt-6 text-muted">$ python3 scripts/nvx.py sandbox --help
+run · provision · start · exec · stop · deprovision</pre>
+            </div>
+          </div>
+
+          <p class="mt-2 bg-accent px-5 py-6 text-lead text-accent-ink md:px-6">
+            一个内核，三个用户态：Alpine · Ubuntu · Azure Linux 共用同一 NVX 内核。
+          </p>
+        </div>
+      </section>
+
+      <!-- proof：研究谱系 -->
+      <section id="proof" class="mt-2">
+        <div class="grid gap-2 lg:grid-cols-12">
+          <div class="tile reveal flex flex-col justify-between bg-accent p-6 md:p-8 lg:col-span-5" data-delay="0">
+            <div>
+              <p class="eyebrow text-accent-ink/80">03 · 谱系</p>
+              <h2 class="section-title mt-3 text-accent-ink">研究谱系</h2>
+            </div>
+            <p class="mt-10 max-w-[38ch] text-body text-accent-ink">
+              由微软研究院系统研究组与 Azure 系统研究院联合开发，建立在 Nanvix 研究之上。
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 lg:col-span-7 lg:grid-cols-3">
+            {
+              marks.map((mark, i) => (
+                <div class="tile reveal flex flex-col justify-between bg-surface p-5" data-delay={60 + i * 40}>
+                  <p class="text-small text-muted">{mark.role}</p>
+                  <p class="mt-6 font-display text-lead">{mark.name}</p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- cta：行动砖，两端被画布裁切 -->
+      <section id="cta" class="mt-2">
+        <div class="grid grid-cols-1 gap-2 md:grid-cols-[10vw_1fr_10vw]">
+          <div class="tile hidden bg-surface md:block" aria-hidden="true"></div>
+          <div class="tile reveal bg-accent px-6 py-12 md:px-12 md:py-16">
+            <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+              <div>
+                <p class="eyebrow text-accent-ink/80">04 · 开始</p>
+                <h2 class="section-title mt-3 text-accent-ink">现在就跑起来</h2>
+                <p class="mt-5 max-w-[42ch] text-body text-accent-ink">
+                  Python 3.10+，克隆仓库，下载预构建包，然后运行它。
+                </p>
+                <nav class="mt-8 flex flex-wrap items-center gap-3" aria-label="主要行动">
+                  <a
+                    class="press inline-flex min-h-[48px] items-center bg-bg px-6 text-body text-accent hover:bg-paper hover:text-accent-ink"
+                    href="https://github.com/microsoft/nvx"
+                  >
+                    下载并启动
+                  </a>
+                  <a
+                    class="press inline-flex min-h-[48px] items-center border border-accent-ink/40 px-6 text-body text-accent-ink hover:bg-accent-ink hover:text-accent"
+                    href={withBase('/docs/')}
+                  >
+                    阅读文档
+                  </a>
+                </nav>
+              </div>
+
+              <div class="lg:w-[22rem]">
+                <p class="text-small text-accent-ink/70">第一条命令</p>
+                <code class="step-command mt-3 text-accent-ink">$ git clone https://github.com/microsoft/nvx</code>
+                <p class="mt-4 text-small text-accent-ink/70">
+                  然后 <code class="font-mono">nvx.py download</code> 与 <code class="font-mono">nvx.py run</code>；完整说明见中文文档。
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="tile hidden bg-mid md:block" aria-hidden="true"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- footer：用色块搭出的标志 -->
+    <footer class="mt-2">
+      <div class="tile bg-surface p-6 md:p-8">
+        <div class="flex items-end gap-2" style="height: 30svh;">
+          <div class="tile on-paper flex flex-1 items-end justify-center bg-paper pb-6" style="height: 72%;">
+            <span class="footer-mark font-display" style="color: var(--accent-ink)">N</span>
+          </div>
+          <div class="tile flex flex-1 items-end justify-center bg-accent pb-6" style="height: 100%;">
+            <span class="footer-mark font-display text-accent-ink">V</span>
+          </div>
+          <div class="tile hairline flex flex-1 items-end justify-center bg-bg pb-6" style="height: 60%;">
+            <span class="footer-mark font-display">X</span>
+          </div>
+        </div>
+        <div class="mt-10 grid gap-8 md:mt-14 lg:grid-cols-12">
+          <nav class="flex flex-wrap gap-x-12 gap-y-3 text-body lg:col-span-8" aria-label="页脚导航">
+            <a class="press hover:text-accent" href="#how">三条命令</a>
+            <a class="press hover:text-accent" href="#feat">系统构件</a>
+            <a class="press hover:text-accent" href="#proof">研究谱系</a>
+            <a class="press hover:text-accent" href={withBase('/docs/')}>文档</a>
+            <a class="press hover:text-accent" href={withBase('/NOTICE.txt')}>许可与归属</a>
+            <a class="press hover:text-accent" href="https://github.com/microsoft/nvx">下载并启动</a>
+          </nav>
+          <div class="text-body text-muted lg:col-span-4">
+            <p>
+              <a class="press underline underline-offset-4 hover:text-accent hover:no-underline" href="https://github.com/microsoft/nvx">
+                github.com/microsoft/nvx
+              </a>
+            </p>
+            <p class="mt-2">
+              <a class="press underline underline-offset-4 hover:text-accent hover:no-underline" href="https://github.com/microsoft/nvx/issues">
+                问题反馈 · GitHub Issues
+              </a>
+            </p>
+          </div>
+        </div>
+        <div class="mt-10 flex flex-wrap items-center justify-between gap-4">
+          <div class="text-small text-muted">
+            <p>
+              本站为非官方中文文档站点，内容以
+              <a class="press underline underline-offset-4 hover:text-accent hover:no-underline" href="https://github.com/microsoft/nvx">microsoft/nvx</a>
+              仓库原文为准。
+            </p>
+          </div>
+          <a
+            class="press inline-flex min-h-[40px] items-center bg-accent px-5 text-small text-accent-ink hover:bg-accent-ink hover:text-accent"
+            href="https://github.com/microsoft/nvx"
+          >
+            获取 NVX
+          </a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</Base>

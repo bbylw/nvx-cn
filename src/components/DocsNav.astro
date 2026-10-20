@@ -1,0 +1,80 @@
+---
+// 文档侧栏 / 移动端目录共用的导航列表。
+import type { DocEntry, DocGroup } from '../lib/docs';
+import { docHref, groupLabels, groupNotes, navGroupOrder } from '../lib/docs';
+import { withBase } from '../lib/site';
+
+interface Props {
+  groups: Record<DocGroup, DocEntry[]>;
+  activeId?: string;
+  isHome?: boolean;
+  showNotes?: boolean;
+}
+
+const { groups, activeId, isHome = false, showNotes = false } = Astro.props;
+const total = navGroupOrder.reduce((count, group) => count + groups[group].length, 0);
+---
+
+<nav aria-label="文档导航">
+  <a
+    href={withBase('/docs/')}
+    aria-current={isHome ? 'page' : undefined}
+    class:list={[
+      'press flex min-h-10 items-center justify-between gap-3 px-3 py-2 text-body',
+      isHome ? 'bg-accent text-accent-ink' : 'hover:bg-mid',
+    ]}
+  >
+    <span>文档首页</span>
+    <span class:list={['text-small', isHome ? 'text-accent-ink/70' : 'text-muted']}>概览</span>
+  </a>
+
+  {
+    navGroupOrder.map((group) => {
+      const entries = groups[group];
+      if (entries.length === 0) return null;
+      return (
+        <div class="mt-5">
+          <div class="flex items-baseline justify-between gap-3 px-3">
+            <p class="text-small text-ink">{groupLabels[group]}</p>
+            <p class="text-small tabular-nums text-muted">{entries.length}</p>
+          </div>
+          {showNotes && <p class="mt-1 px-3 text-small text-muted">{groupNotes[group]}</p>}
+          <ul class="mt-2 space-y-px">
+            {entries.map((entry) => {
+              // 架构手册的子页面继承“架构设计”入口的选中态。
+              const active =
+                entry.id === activeId ||
+                (entry.id === 'design' && typeof activeId === 'string' && activeId.startsWith('design/'));
+              return (
+                <li>
+                  <a
+                    href={docHref(entry)}
+                    aria-current={active ? 'page' : undefined}
+                    class:list={[
+                      'press flex min-h-10 items-center gap-2 px-3 py-2 text-small',
+                      active ? 'bg-accent text-accent-ink' : 'text-muted hover:bg-mid hover:text-ink',
+                    ]}
+                  >
+                    <span
+                      class:list={[
+                        'w-5 shrink-0 tabular-nums',
+                        active ? 'text-accent-ink/70' : 'text-muted',
+                      ]}
+                    >
+                      {String(entry.data.order).padStart(2, '0')}
+                    </span>
+                    <span class="min-w-0">{entry.data.title}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      );
+    })
+  }
+
+  <p class="mt-6 border-t border-white/10 px-3 pt-4 text-small text-muted">
+    共 {total} 篇主文档{groups.design.length > 0 && ` · 另有 ${groups.design.length} 篇架构章节`} · 译自上游
+  </p>
+</nav>

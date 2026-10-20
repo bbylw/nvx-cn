@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# NVX 中文站是非官方中文文档站点。
+# 部署后可在 SITE_URL 中设置正式域名，并按需补充 Sitemap。

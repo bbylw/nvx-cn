@@ -1,0 +1,69 @@
+---
+// NVX 中文站 · 404
+import Base from '../layouts/Base.astro';
+import TopRow from '../components/TopRow.astro';
+import { withBase } from '../lib/site';
+---
+
+<Base
+  title="页面未找到 · NVX 中文站"
+  description="这个地址没有对应的页面。返回 NVX 中文站首页，或继续查看中文文档。"
+  noindex
+>
+  <div class="p-2">
+    <TopRow current="none" />
+
+    <main id="main" class="mt-2 grid gap-2 lg:grid-cols-12">
+      <div class="tile bg-accent p-6 md:p-8 lg:col-span-8" style="min-height: 42svh;">
+        <p class="font-display text-head text-accent-ink">404</p>
+        <h1 class="mt-6 text-lead font-display text-accent-ink">页面未找到</h1>
+        <p class="mt-4 max-w-[52ch] text-body text-accent-ink">
+          这个地址没有对应的页面。可能是路径拼写有误，或文档已经移动。
+        </p>
+        <nav class="mt-8 flex flex-wrap items-center gap-4" aria-label="恢复导航">
+          <a class="press inline-flex min-h-[44px] items-center bg-bg px-6 text-body text-accent hover:bg-paper hover:text-accent-ink" href={withBase('/')}>
+            返回首页
+          </a>
+          <a class="press text-body text-accent-ink underline underline-offset-4 hover:no-underline" href={withBase('/docs/')}>
+            文档首页
+          </a>
+        </nav>
+      </div>
+      <div class="tile flex flex-col justify-between bg-surface p-6 md:p-8 lg:col-span-4" style="min-height: 300px;">
+        <p class="text-lead font-display">仍然没找到？</p>
+        <div class="mt-6 space-y-3 text-body">
+          <p>
+            <a class="press underline underline-offset-4 hover:text-accent hover:no-underline" href="https://github.com/microsoft/nvx">
+              查看 microsoft/nvx 仓库
+            </a>
+          </p>
+          <p>
+            <a class="press underline underline-offset-4 hover:text-accent hover:no-underline" href="https://github.com/microsoft/nvx/issues">
+              在 GitHub Issues 提问
+            </a>
+          </p>
+        </div>
+        <p class="mt-8 text-small text-muted">本站为非官方中文文档站点。</p>
+      </div>
+    </main>
+
+    <footer class="mt-2">
+      <div class="tile bg-surface p-6 md:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <nav class="flex flex-wrap gap-x-12 gap-y-3 text-body" aria-label="页脚导航">
+            <a class="press hover:text-accent" href={withBase('/')}>首页</a>
+            <a class="press hover:text-accent" href={withBase('/docs/')}>文档</a>
+            <a class="press hover:text-accent" href="https://github.com/microsoft/nvx">GitHub 仓库</a>
+          </nav>
+          <div class="text-small text-muted">
+            <p>
+              内容以
+              <a class="press underline underline-offset-4 hover:text-accent hover:no-underline" href="https://github.com/microsoft/nvx">microsoft/nvx</a>
+              仓库原文为准。
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</Base>

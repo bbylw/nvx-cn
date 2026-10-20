@@ -1,0 +1,68 @@
+---
+// 启动控制台（页面的 live thing）：切换客户机，见证行随之变化
+const guests = [
+  { id: 'alpine', label: 'alpine' },
+  { id: 'ubuntu', label: 'ubuntu' },
+  { id: 'azurelinux', label: 'azurelinux' },
+];
+---
+
+<div class="flex h-full flex-col gap-4 p-5 md:p-6" data-ui data-boot-console>
+  <div class="flex items-center justify-between gap-3">
+    <p class="font-mono text-small text-muted">nvx guest console</p>
+    <p class="flex items-center gap-2 font-mono text-small text-muted">
+      <span class="inline-block h-2 w-2 bg-accent"></span>
+      /dev/hvc0
+    </p>
+  </div>
+
+  <pre class="ui-log text-muted"><span class="text-muted">$ python3 scripts/nvx.py run</span>
+boot: linux · openvmm · musl
+init: nvx-managed-agent /dev/hvc0</pre>
+
+  <p class="font-display text-lead text-accent" data-boot-token role="status" aria-live="polite" aria-atomic="true">
+    NVX-GUEST-BOOT-OK: alpine
+  </p>
+
+  <pre class="ui-log text-muted">root@nvx:~# <span class="text-ink">_</span></pre>
+
+  <div class="mt-2 flex flex-wrap items-center gap-2" role="group" aria-label="选择客户机用户态">
+    {
+      guests.map((g) => (
+        <button
+          type="button"
+          class={`chip press inline-flex min-h-[44px] items-center px-4 text-small ${g.id === 'alpine' ? 'bg-accent text-accent-ink' : 'bg-surface text-ink'}`}
+          data-guest={g.id}
+          aria-pressed={g.id === 'alpine' ? 'true' : 'false'}
+        >
+          {g.label}
+        </button>
+      ))
+    }
+  </div>
+
+  <p class="text-small text-muted">切换用户态，见证行随之变化。</p>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-boot-console]');
+  if (root) {
+    const token = root.querySelector<HTMLElement>('[data-boot-token]');
+    const chips = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-guest]'));
+    const sync = (guest: string) => {
+      if (token) token.textContent = `NVX-GUEST-BOOT-OK: ${guest}`;
+      for (const chip of chips) {
+        const on = chip.dataset.guest === guest;
+        chip.setAttribute('aria-pressed', String(on));
+        chip.classList.toggle('bg-accent', on);
+        chip.classList.toggle('text-accent-ink', on);
+        chip.classList.toggle('bg-surface', !on);
+        chip.classList.toggle('text-ink', !on);
+      }
+    };
+    sync('alpine');
+    for (const chip of chips) {
+      chip.addEventListener('click', () => sync(chip.dataset.guest ?? 'alpine'));
+    }
+  }
+</script>
