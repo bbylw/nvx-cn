@@ -9,9 +9,6 @@ NVX 由[微软研究院系统研究组][msr-systems]与 [Azure 系统研究院][
 
 NVX 仓库包含 Linux、OpenVMM 与 Rust 客户机工具链的版本锁定，以及使用 NVX 所需的补丁、客户机源文件、构建工具与基准测试。Alpine、Ubuntu 与 Azure Linux 都在各自统一的 `/sbin/nvx-*` 路径上提供来自 [`nvx-rs`](https://nvx.ndjp.net/docs/nvx-rs/) 的九个静态客户机二进制。
 
-> 本仓库是 NVX 的**非官方中文文档站**，本文档译自 [`microsoft/nvx`](https://github.com/microsoft/nvx) 的 README。
-> 完整中文文档（49 篇）在线阅读：<https://nvx.ndjp.net/>
-
 ## 快速开始
 
 需要 Python 3.10 或更新版本。下面的命令会在当前检出版本存在对应发布包时，下载该平台预构建的 NVX 包；否则回退到最近的、已发布的第一父提交祖先。因此不需要构建客户机、OpenVMM，或 `nvx.py run` 所运行的 [`nvx-rs`](https://nvx.ndjp.net/docs/nvx-rs/)。如果发布包中的 `nvx-rs` 与检出目录里的来源不同，`nvx.py` 会用 Cargo 构建它，[rustup](https://rustup.rs/) 会安装所需的工具链。启动成功会打印 `NVX-GUEST-BOOT-OK: alpine` 并打开一个 root shell。加上 `--guest ubuntu` 或 `--guest azurelinux`，可以用同一个 NVX 内核启动 Ubuntu 或 Azure Linux 用户态。
@@ -76,7 +73,7 @@ python scripts\nvx.py run
 - [宿主准备脚本](https://nvx.ndjp.net/docs/host-setup/) — `scripts/setup` 下宿主环境准备脚本的用法。
 - [安全策略](https://nvx.ndjp.net/docs/security/) — 漏洞报告方式与安全响应流程。
 
-## 许可与归属
+## License
 
-- NVX 本身由 Microsoft Corporation 以 MIT License 发布，版权归其所有。
-- 本文档为非官方中文翻译，内容以 [`microsoft/nvx`](https://github.com/microsoft/nvx) 仓库原文为准；许可与字体归属见 [`public/NOTICE.txt`](public/NOTICE.txt)。
+- NVX 由 Microsoft Corporation 以 MIT License 发布，版权归其所有。
+- 本文为非官方中文翻译，内容以 [`microsoft/nvx`](https://github.com/microsoft/nvx) 仓库原文为准。
