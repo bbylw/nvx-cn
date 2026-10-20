@@ -1,100 +1,102 @@
-# NVX 中文站
+# NVX：超轻量级微虚拟机沙箱
 
-[NVX](https://github.com/microsoft/nvx) 超轻量级微虚拟机沙箱的**非官方中文文档站**。落地页与中文文档站各自独立成页，使用 Astro + Tailwind CSS 构建为纯静态站点。
+NVX 是一个超轻量级微虚拟机沙箱，用硬件强制隔离来运行不受信任的工作负载。它构建在 OpenVMM 之上，客户机运行 Linux。
 
-文档站把上游 `microsoft/nvx` 的 16 篇主文档、31 篇架构章节以及宿主准备脚本与安全策略完整翻译为中文（共 49 篇，正文、表格、命令与说明均已翻译，代码与 API 名称保持原样），不再是链接地图。
+NVX 由[微软研究院系统研究组][msr-systems]与 [Azure 系统研究院][azure-systems] 联合开发，建立在 [Nanvix](https://github.com/nanvix) 系统的研究成果之上。
 
-> 本站与 Microsoft 无隶属关系，也不代表 Microsoft 官方立场。产品名称、命令与文档内容以 [`microsoft/nvx`](https://github.com/microsoft/nvx) 仓库原文为准；许可与字体归属见 [`public/NOTICE.txt`](public/NOTICE.txt)。
+[msr-systems]: https://www.microsoft.com/en-us/research/group/systems-research-group-redmond/
+[azure-systems]: https://www.microsoft.com/en-us/research/group/azure-research-systems/
 
-## 技术栈
+NVX 仓库包含 Linux、OpenVMM 与 Rust 客户机工具链的版本锁定，以及使用 NVX 所需的补丁、客户机源文件、构建工具与基准测试。Alpine、Ubuntu 与 Azure Linux 都在各自统一的 `/sbin/nvx-*` 路径上提供来自 [`nvx-rs`](https://nvx.ndjp.net/docs/nvx-rs/) 的九个静态客户机二进制。
 
-- Astro 7（静态输出）
-- Tailwind CSS 4（通过 `@tailwindcss/vite`）
-- TypeScript 6（`astro check`）
-- Bun 1.4+（也可以使用 Node.js 20+ 与 npm/pnpm）
+> 本仓库是 NVX 的**非官方中文文档站**，本文档译自 [`microsoft/nvx`](https://github.com/microsoft/nvx) 的 README。
+> 完整中文文档（49 篇）在线阅读：<https://nvx.ndjp.net/>
 
-## 本地开发
+## 快速开始
+
+需要 Python 3.10 或更新版本。下面的命令会在当前检出版本存在对应发布包时，下载该平台预构建的 NVX 包；否则回退到最近的、已发布的第一父提交祖先。因此不需要构建客户机、OpenVMM，或 `nvx.py run` 所运行的 [`nvx-rs`](https://nvx.ndjp.net/docs/nvx-rs/)。如果发布包中的 `nvx-rs` 与检出目录里的来源不同，`nvx.py` 会用 Cargo 构建它，[rustup](https://rustup.rs/) 会安装所需的工具链。启动成功会打印 `NVX-GUEST-BOOT-OK: alpine` 并打开一个 root shell。加上 `--guest ubuntu` 或 `--guest azurelinux`，可以用同一个 NVX 内核启动 Ubuntu 或 Azure Linux 用户态。
+
+在客户机内用 `/sbin/nvx-exit 0` 干净退出。详细的前置条件与运行选项见[环境准备](https://nvx.ndjp.net/docs/setup/)与[运行](https://nvx.ndjp.net/docs/run/)指南。
+
+> ℹ️ 若要在不经过 `scripts/nvx.py` 运行时包装器的情况下直接集成 OpenVMM，见[直接运行 OpenVMM](https://nvx.ndjp.net/docs/run/#直接运行-openvmm)。
+
+### Linux / KVM
+
+需要[配置好 KVM，并对 `/dev/kvm` 有读写权限](https://nvx.ndjp.net/docs/setup/#linux--kvm)。
+
+```bash
+git clone https://github.com/microsoft/nvx.git && cd nvx
+python3 scripts/nvx.py download
+python3 scripts/nvx.py run
+```
+
+### Linux / MSHV
+
+需要[配置好 MSHV，并对 `/dev/mshv` 有读写权限](https://nvx.ndjp.net/docs/setup/#linux--mshv)。
+
+```bash
+git clone https://github.com/microsoft/nvx.git && cd nvx
+python3 scripts/nvx.py download --hypervisor mshv
+python3 scripts/nvx.py run --hypervisor mshv
+```
+
+### Windows / WHP
+
+需要[启用 Windows Hypervisor Platform](https://nvx.ndjp.net/docs/setup/#windows--whp)。
+
+```powershell
+git clone https://github.com/microsoft/nvx.git; Set-Location nvx
+python scripts\nvx.py download
+python scripts\nvx.py run
+```
+
+## 文档
+
+### 使用
+
+- [环境准备](https://nvx.ndjp.net/docs/setup/) — 配置宿主环境的说明。
+- [构建](https://nvx.ndjp.net/docs/build/) — 从源码构建 NVX 的说明。
+- [运行](https://nvx.ndjp.net/docs/run/) — 运行 NVX 的说明。
+- [基准测试](https://nvx.ndjp.net/docs/benchmarks/) — 对 NVX 做基准测试的说明。
+- [命令行参考](https://nvx.ndjp.net/docs/usage/) — `scripts/nvx.py` 全部命令与选项的完整参考。
+- [Rust API](https://nvx.ndjp.net/docs/rust-api/) — 用 Rust 驱动沙箱生命周期的 `aci_edge_sandboxes` crate。
+- [NVX Rust crate](https://nvx.ndjp.net/docs/nvx-rs/) — 承载 NVX 机制的 `nvx-rs` crate：OpenVMM 控制协议，以及 NVX 微虚拟机的启动、策略下沉与监管。
+
+### 开发
+
+- [架构设计](https://nvx.ndjp.net/docs/design/) — NVX 微虚拟机及其单工作负载客户机运行时的架构。
+- [Ubuntu 客户机支持](https://nvx.ndjp.net/docs/guests/ubuntu/) — NVX 如何在自有内核上运行 Ubuntu 用户态。
+- [Azure Linux 客户机支持](https://nvx.ndjp.net/docs/guests/azurelinux/) — NVX 如何在自有内核上运行 Azure Linux 用户态。
+- [项目结构](https://nvx.ndjp.net/docs/project-structure/) — NVX 仓库布局总览。
+- [持续集成](https://nvx.ndjp.net/docs/ci/) — 运行与维护 NVX CI 的说明。
+- [对抗性测试](https://nvx.ndjp.net/docs/adversarial-testing/) — 有边界的自适应压力与收敛测试活动。
+- [打包与源码交付](https://nvx.ndjp.net/docs/distribution/) — 打包与分发 NVX 的说明。
+- [贡献指南](https://nvx.ndjp.net/docs/contribute/) — 向 NVX 贡献代码的约定。
+- [OpenVMM 上游路线图](https://nvx.ndjp.net/docs/openvmm-roadmap/) — 把 OpenVMM 分支中的微虚拟机提交上游化的计划。
+- [宿主准备脚本](https://nvx.ndjp.net/docs/host-setup/) — `scripts/setup` 下宿主环境准备脚本的用法。
+- [安全策略](https://nvx.ndjp.net/docs/security/) — 漏洞报告方式与安全响应流程。
+
+## 关于本仓库
+
+本仓库是 NVX 中文文档站的源码，内容与许可归属见 [`public/NOTICE.txt`](public/NOTICE.txt)。
+
+- **在线站点**：<https://nvx.ndjp.net/>
+- **翻译范围**：`src/content/docs/` 下逐篇译自 [`microsoft/nvx`](https://github.com/microsoft/nvx) `dev` 分支的 16 篇主文档、31 篇架构章节，以及宿主准备脚本与安全策略，共 49 篇
+- **技术栈**：Astro 7 + Tailwind CSS 4，纯静态输出，无服务端依赖
+
+本地开发：
 
 ```bash
 bun install
 bun run dev        # http://localhost:4321
 bun run check      # Astro + TypeScript 检查
 bun run build      # 输出到 dist/
-bun run preview    # 预览构建结果
 ```
 
-## 部署与站点地址
-
-站点默认按**域名根路径**构建。部署到子路径（例如 GitHub Pages 项目页）时，需要同时设置站点地址与基础路径：
-
-```bash
-# 域名根路径
-SITE_URL=https://nvx.example.com bun run build
-
-# 子路径：https://example.github.io/nvx/
-SITE_URL=https://example.github.io BASE_PATH=/nvx bun run build
-```
-
-PowerShell：
-
-```powershell
-$env:SITE_URL = "https://example.github.io"
-$env:BASE_PATH = "/nvx"
-bun run build
-```
-
-- `SITE_URL` 未设置时，构建会省略 `canonical`、`og:url`，避免生成错误域名；Netlify、Cloudflare Pages、Vercel 会自动读取其平台环境变量作为回退。
-- `BASE_PATH` 用于子路径部署，站内链接会通过 `src/lib/site.ts` 自动加上前缀。
-- `dist/` 可直接部署到任意静态托管；没有服务端依赖。
-
-## 目录
-
-```text
-src/
-  pages/index.astro       落地页
-  pages/docs/index.astro  文档首页（概览与快速启动）
-  pages/docs/[...slug].astro  文档页（按内容集合生成）
-  pages/404.astro         404
-  content/docs/           中文文档正文（Markdown + frontmatter）
-  content.config.ts       文档内容集合与 frontmatter 校验
-  layouts/Base.astro      字体、元信息、skip link、入场动效回退
-  layouts/DocsLayout.astro 文档页外壳：目录 / 正文 / 本页目录
-  components/TopRow.astro 顶部拼板导航
-  components/DocsNav.astro 文档目录（侧栏与移动端共用）
-  components/BootConsole.astro 客户机切换控制台
-  styles/global.css       设计令牌、文档排版与全局样式
-  lib/site.ts             BASE_URL 前缀与 canonical 规范化
-  lib/docs.ts             文档分组、排序、路由与上下篇
-public/
-  favicon.svg            站点图标
-  NOTICE.txt             内容来源、翻译范围、MIT 许可与字体归属
-  robots.txt             爬虫规则
-```
-
-## 内容与交互约定
-
-- 文档正文是上游英文文档的完整中文翻译：命令、代码、路径与 API 名称保持原样，说明文字与表格已翻译；未翻译的上游文件（如 `scripts/setup/README.md`）在正文中链接到 GitHub 原文。
-- 文档内容存放在 `src/content/docs/`，由内容集合统一校验 frontmatter（`title` / `description` / `group` / `order` / `source`），页面按 `entry.id` 生成 `/docs/<id>/` 路由。
-- 站内文档链接统一写成 `/docs/...` 绝对路径；构建后由 `astro.config.mjs` 的集成统一补上 `BASE_PATH` 前缀。
-- 终端示例使用 `scripts/nvx.py` 支持的命令面；需要 `--output` 的 `build-guest-binaries` 已显式给出输出目录。
-- `BootConsole` 的客户机切换使用真实按钮与 `aria-pressed`，结果行通过 `aria-live` 播报。
-- 入场动效在脚本不可用时自动回退为可见内容；脚本可用但元素始终未进入视口时，4 秒后强制显示，避免锚点跳转、打印或截图时内容永久隐藏；`prefers-reduced-motion` 下关闭位移与动画。
-- 拉丁字体（Syne、Familjen Grotesk）通过 Fontsource 自托管；中文使用系统 CJK 字体，避免额外下载数百 KB 的网页字体。
-
-## 可访问性
-
-- 每页包含 `header`、`main`、`footer` 地标与“跳到主要内容”链接。
-- 焦点样式使用深色内环 + 亮色外环，在深色、白色与 lime 背景上都可辨认。
-- 文档目录使用真实链接与 `aria-current="page"` 标记当前页；窄屏时折叠为原生 `details`，键盘可用。
-- 右侧“本页目录”由正文标题生成，滚动时保持可见。
-- 正文表格与代码块在窄屏下横向滚动，不撑破页面。
+部署使用 GitHub Pages（见 `.github/workflows/deploy.yml`），推送 `main` 即自动发布；自定义域为 `nvx.ndjp.net`。
 
 ## 许可与归属
 
-- 站点文案与文档索引改编自 [`microsoft/nvx`](https://github.com/microsoft/nvx)，遵循 MIT License，版权归 Microsoft Corporation 所有。
-- Syne 与 Familjen Grotesk 遵循 SIL Open Font License 1.1。
-- 完整声明见 [`public/NOTICE.txt`](public/NOTICE.txt)。
-
-## 本地工作目录
-
-`.frontend-studio/`、`.workbuddy/`、`.wbapp_*` 是本地设计与工具产物，已加入 `.gitignore`，不应发布到站点。
+- NVX 本身由 Microsoft Corporation 以 MIT License 发布，版权归其所有。
+- 本文档站为非官方中文翻译，内容以 [`microsoft/nvx`](https://github.com/microsoft/nvx) 仓库原文为准。
+- 站点字体 Syne 与 Familjen Grotesk 通过 Fontsource 自托管，遵循 SIL Open Font License 1.1；中文使用访问者系统自带的 CJK 字体。
